@@ -18,7 +18,9 @@ To select a stock, enter the number next to it. Alternatively, select `0` to go 
 
 When you select a stock, you can review its performance and choose whether you want to buy it.
 
-Back in the main menu, select `2` to start a new day and see how your portfolio performs.
+Back in the main menu, select `3` to start a new day and see how your portfolio performs.
+
+To review your portfolio press `2` to list your stocks. There, you can choose if you want to sell your stocks.
 
 ### Common Issues (will be fixed)
 
@@ -27,5 +29,6 @@ Back in the main menu, select `2` to start a new day and see how your portfolio 
 
 ## Coming Soon
 
-- Review and sell owned stocks
 - End-of-game screen and statistics
+- more insights of your portfolio
+- much more...
