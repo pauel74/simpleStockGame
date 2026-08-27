@@ -21,6 +21,10 @@ while(gameloop)
     }
     else if(choice == 2)
     {
+        Investsments();
+    }
+    else if(choice == 3)
+    {
         brandNewDay();
     }
 }
@@ -102,6 +106,7 @@ void reviewStock(int stockID)
     if(choice == 1 && balance > stocks[stockID].history[day])
     {
         balance = balance - stocks[stockID].history[day];
+        stocks[stockID].invested = stocks[stockID].invested + stocks[stockID].history[day];
         stocks[stockID].owning++;
         reviewStock(stockID);
     }
@@ -116,12 +121,13 @@ void brandNewDay()
 int menu()
 {
     Console.Clear();
-    Console.WriteLine($"Day {day}");
+    Console.WriteLine($"Day {day}/30");
     Console.WriteLine($"Balance:\t{balance:F2}$");
     calculateBrokerage();
     Console.WriteLine($"Brokerage\t{brokerage:F2}$\n");
     Console.WriteLine("[1] Market");
-    Console.WriteLine("[2] Next Day");
+    Console.WriteLine("[2] Investments");
+    Console.WriteLine("[3] Next Day");
     Console.Write($"\nInput a number: ");
     return Convert.ToInt32(Console.ReadLine());
 }
@@ -133,13 +139,15 @@ void createStock() // creates stock with random values and adds it to the stocks
     stock.name = stockNames[random.Next(stockNames.Count())];
     stockNames.Remove(stock.name);
 
-    stock.startingPrice = random.Next(10, 10000) / 10.0;
+    stock.startingPrice = random.Next(10, 3000) / 10.0;
     stock.stable = random.Next(1,50) / 10.0;
     stock.history.Add(stock.startingPrice);
+    double substract = 100;
 
     for(int i = 0; i < 100; i++)
-    {
-        double multiplier = random.Next(0,201)-95;
+    {   
+        substract = substract + (random.Next(0,10) - 5);
+        double multiplier = random.Next(0,201)-substract;
         multiplier = (multiplier / 2000.0 * stock.stable + 1) ;
         stock.history.Add(stock.history[stock.history.Count() -1] * multiplier);
     }
@@ -153,6 +161,48 @@ void calculateBrokerage()
         brokerage += stocks[i].history[day] * stocks[i].owning;
     }
 }
+void Investsments()
+{
+    Console.Clear();
+    int stockID = 0;
+    Console.WriteLine($"Stock\t\tAmount\tTotal\t\tPrice\n");
+    for(int i = 0; i < day;i++)
+    {
+        if(stocks[i].owning > 0)
+        {
+            stockID++;
+            Console.Write($"[{stockID}] {stocks[i].name}\t{stocks[i].owning}\t");
+            Console.WriteLine($"{(stocks[i].history[day]*stocks[i].owning):F2}\t\t{stocks[i].history[day]:F2}");
+        }
+    }
+        if(stockID == 0)
+        {
+            return;
+        }
+    Console.WriteLine($"\n[0] Menu\t\tBalance: {balance:F2}");
+    
+    Console.Write($"\nSell stock: ");
+    int sellstock = Convert.ToInt32(Console.ReadLine());
+
+    stockID = 0;
+    for(int k = 0; k < day; k++)
+    {
+        if(stocks[k].owning > 0)
+        {
+            stockID++;
+            if(sellstock == stockID)
+            {
+                Console.WriteLine($"You own {stocks[k].owning} stocks. \nHow many do you want to sell? (0 to cancel)");
+                stockID = Convert.ToInt32(Console.ReadLine());
+                if(stockID > 0 && stockID <= stocks[k].owning)
+                {
+                    stocks[k].owning = stocks[k].owning - stockID;
+                    balance = balance + (stockID * stocks[k].history[day]);
+                }
+            }
+        }
+    }
+}
 public class Stock
 {
     public string name = ""; // from stockNames list
@@ -161,4 +211,5 @@ public class Stock
     public List<double> history = [];
 
     public int owning = 0;
+    public double invested = 0;
 }
